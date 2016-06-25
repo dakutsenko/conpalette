@@ -210,6 +210,26 @@ my %palettes = (
         '586E75',
         '002B36',
     ],
+    # adapted from https://bbs.archlinux.org/viewtopic.php?id=167717
+    'blah-light' => [
+        '232323', #black
+        'D75F5F', #darkred
+        '87AF5F', #darkgreen
+        'D7AF87', #brown
+        '8787AF', #darkblue
+        'BD53A5', #darkmagenta
+        '5FAFAF', #darkcyan
+        'E5E5E5', #lightgrey
+         
+        '2B2B2B', #darkgrey
+        'E33636', #red
+        '98E34D', #green
+        'FFD75F', #yellow
+        '7373C9', #blue
+        'D633B2', #magenta
+        '44C9C9', #cyan
+        'FFFFFF', #white
+   ]
 );
 
 GetOptions(
@@ -217,7 +237,7 @@ GetOptions(
     'r|reset'     => \my $reset,
     's|show'      => \&show,
     't|tty=i'     => \(my $tty = ''),
-    'S|shell'     => \(my $shell),
+    'shell'       => \(my $shell),
     'c|change=s@' => \(my $changes),
 ) or pod2usage();
 

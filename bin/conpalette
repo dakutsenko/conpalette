@@ -217,6 +217,7 @@ GetOptions(
     'r|reset'     => \my $reset,
     's|show'      => \&show,
     't|tty=i'     => \(my $tty = ''),
+    'S|shell'     => \(my $shell),
     'c|change=s@' => \(my $changes),
 ) or pod2usage();
 
@@ -242,7 +243,11 @@ die "No palette name specified; aborted\n" if !defined $name;
 die "Unknown palette name; aborted\n" if !exists $palettes{$name};
 
 for my $num (0..$#{ $palettes{$name} }) {
-    syswrite $handle, sprintf("\033]P%X%s", $num, $palettes{$name}[$num]);
+    if ($shell) {
+        printf("echo -en \"\\e]P%X%s\"\n", $num, $palettes{$name}[$num]);
+    } else {
+        syswrite $handle, sprintf("\033]P%X%s", $num, $palettes{$name}[$num]);
+    }
 }
 
 exit;
@@ -297,6 +302,7 @@ B<conpalette> [options] [palette]
    -l, --list              List the available palettes
    -r, --reset             Reset the console palette
    -s, --show              Show the current palette
+   -S, --shell             Print code for including in .bashrc
    -t N, --tty=N           Specify a different tty
    -c NUM:COLOR, --change  Change color(s) manually (e.g. -c 13:1E2320)
 

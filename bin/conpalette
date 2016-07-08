@@ -233,12 +233,13 @@ my %palettes = (
 );
 
 GetOptions(
-    'l|list'      => \&list,
-    'r|reset'     => \my $reset,
-    's|show'      => \&show,
-    't|tty=i'     => \(my $tty = ''),
-    'shell'       => \(my $shell),
-    'c|change=s@' => \(my $changes),
+    'l|list'        => \&list,
+    'r|reset'       => \my $reset,
+    's|show'        => \&show,
+    't|tty=i'       => \(my $tty = ''),
+    'shell'         => \(my $shell),
+    'oneline'       => \(my $oneline),
+    'c|change=s@'   => \(my $changes),
 ) or pod2usage();
 
 open(my $handle, '>', "/dev/tty$tty") or die "Can't open tty: $!; aborted\n";
@@ -262,13 +263,17 @@ my $name = $ARGV[0];
 die "No palette name specified; aborted\n" if !defined $name;
 die "Unknown palette name; aborted\n" if !exists $palettes{$name};
 
+printf "echo -en \"" if $oneline;
 for my $num (0..$#{ $palettes{$name} }) {
     if ($shell) {
-        printf("echo -en \"\\e]P%X%s\"\n", $num, $palettes{$name}[$num]);
+        printf("echo -en \"") if ! $oneline;
+        printf("\\e]P%X%s", $num, $palettes{$name}[$num]);
+        printf("\"\n") if ! $oneline;
     } else {
         syswrite $handle, sprintf("\033]P%X%s", $num, $palettes{$name}[$num]);
     }
 }
+printf "\"\n" if $oneline;
 
 exit;
 
@@ -322,7 +327,8 @@ B<conpalette> [options] [palette]
    -l, --list              List the available palettes
    -r, --reset             Reset the console palette
    -s, --show              Show the current palette
-   -S, --shell             Print code for including in .bashrc
+   --shell                 Print code for including in .bashrc
+   --oneline               In combination with --shell: print code as one echo statement.
    -t N, --tty=N           Specify a different tty
    -c NUM:COLOR, --change  Change color(s) manually (e.g. -c 13:1E2320)
 
